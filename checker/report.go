@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"html/template"
 	"strings"
+
+	sdk "git.happydns.org/checker-sdk-go/checker"
 )
 
 // ── HTML report ───────────────────────────────────────────────────────────────
@@ -287,9 +289,9 @@ li { margin-bottom: .15rem; }
 )
 
 // GetHTMLReport implements sdk.CheckerHTMLReporter.
-func (p *matrixProvider) GetHTMLReport(raw json.RawMessage) (string, error) {
+func (p *matrixProvider) GetHTMLReport(ctx sdk.ReportContext) (string, error) {
 	var r MatrixFederationData
-	if err := json.Unmarshal(raw, &r); err != nil {
+	if err := json.Unmarshal(ctx.Data(), &r); err != nil {
 		return "", fmt.Errorf("failed to unmarshal matrix report: %w", err)
 	}
 
