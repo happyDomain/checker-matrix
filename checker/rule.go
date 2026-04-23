@@ -27,14 +27,14 @@ func (r *matrixRule) ValidateOptions(opts sdk.CheckerOptions) error {
 	return nil
 }
 
-func (r *matrixRule) Evaluate(ctx context.Context, obs sdk.ObservationGetter, opts sdk.CheckerOptions) sdk.CheckState {
+func (r *matrixRule) Evaluate(ctx context.Context, obs sdk.ObservationGetter, opts sdk.CheckerOptions) []sdk.CheckState {
 	var data MatrixFederationData
 	if err := obs.Get(ctx, ObservationKeyMatrix, &data); err != nil {
-		return sdk.CheckState{
+		return []sdk.CheckState{{
 			Status:  sdk.StatusError,
 			Message: fmt.Sprintf("Failed to get Matrix federation data: %v", err),
 			Code:    "matrix_federation_error",
-		}
+		}}
 	}
 
 	domain, _ := opts["serviceDomain"].(string)
@@ -42,14 +42,14 @@ func (r *matrixRule) Evaluate(ctx context.Context, obs sdk.ObservationGetter, op
 
 	if data.FederationOK {
 		version := strings.TrimSpace(data.Version.Name + " " + data.Version.Version)
-		return sdk.CheckState{
+		return []sdk.CheckState{{
 			Status:  sdk.StatusOK,
 			Message: fmt.Sprintf("Running %s", version),
 			Code:    "matrix_federation_ok",
 			Meta: map[string]any{
 				"version": version,
 			},
-		}
+		}}
 	}
 
 	var statusLine string
@@ -73,9 +73,9 @@ func (r *matrixRule) Evaluate(ctx context.Context, obs sdk.ObservationGetter, op
 		statusLine = fmt.Sprintf("Federation broken. Check https://federationtester.matrix.org/#%s", domain)
 	}
 
-	return sdk.CheckState{
+	return []sdk.CheckState{{
 		Status:  sdk.StatusCrit,
 		Message: statusLine,
 		Code:    "matrix_federation_fail",
-	}
+	}}
 }
