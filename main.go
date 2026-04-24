@@ -5,7 +5,7 @@ import (
 	"log"
 
 	matrix "git.happydns.org/checker-matrix/checker"
-	sdk "git.happydns.org/checker-sdk-go/checker"
+	"git.happydns.org/checker-sdk-go/checker/server"
 )
 
 // Version is the standalone binary's version. It defaults to "custom-build"
@@ -23,8 +23,8 @@ func main() {
 	// CheckerDefinition.Version.
 	matrix.Version = Version
 
-	server := sdk.NewServer(matrix.Provider())
-	if err := server.ListenAndServe(*listenAddr); err != nil {
+	srv := server.New(matrix.Provider())
+	if err := srv.ListenAndServe(*listenAddr); err != nil {
 		log.Fatalf("server error: %v", err)
 	}
 }

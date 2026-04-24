@@ -1,3 +1,5 @@
+//go:build standalone
+
 package checker
 
 import (
@@ -8,7 +10,7 @@ import (
 	sdk "git.happydns.org/checker-sdk-go/checker"
 )
 
-// RenderForm implements sdk.CheckerInteractive.
+// RenderForm implements server.Interactive.
 func (p *matrixProvider) RenderForm() []sdk.CheckerOptionField {
 	return []sdk.CheckerOptionField{
 		{
@@ -29,7 +31,7 @@ func (p *matrixProvider) RenderForm() []sdk.CheckerOptionField {
 	}
 }
 
-// ParseForm implements sdk.CheckerInteractive.
+// ParseForm implements server.Interactive.
 func (p *matrixProvider) ParseForm(r *http.Request) (sdk.CheckerOptions, error) {
 	domain := strings.TrimSpace(r.FormValue("serviceDomain"))
 	if domain == "" {
