@@ -10,5 +10,6 @@ RUN CGO_ENABLED=0 go build -tags standalone -ldflags "-X main.Version=${CHECKER_
 
 FROM scratch
 COPY --from=builder /checker-matrix /checker-matrix
+USER 65534:65534
 EXPOSE 8080
 ENTRYPOINT ["/checker-matrix"]
