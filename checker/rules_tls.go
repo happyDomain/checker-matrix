@@ -27,7 +27,7 @@ func (r *tlsChecksRule) Evaluate(ctx context.Context, obs sdk.ObservationGetter,
 	}
 
 	if len(data.ConnectionReports) == 0 {
-		return []sdk.CheckState{infoState("matrix.tls_checks.skipped", "No endpoint reached: TLS posture could not be assessed.")}
+		return []sdk.CheckState{unknownState("matrix.tls_checks.skipped", "No endpoint reached: TLS posture could not be assessed.")}
 	}
 
 	out := make([]sdk.CheckState, 0, len(data.ConnectionReports))
