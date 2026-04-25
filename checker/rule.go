@@ -21,14 +21,6 @@ func Rules() []sdk.CheckRule {
 	}
 }
 
-// Rule returns the aggregate federation rule.
-//
-// Deprecated: prefer Rules() which exposes every concern individually. Kept
-// for backward compatibility with callers that embed a single rule.
-func Rule() sdk.CheckRule {
-	return &federationOKRule{}
-}
-
 // loadMatrixData fetches the Matrix observation. On error returns a
 // CheckState the caller should emit to short-circuit its rule.
 func loadMatrixData(ctx context.Context, obs sdk.ObservationGetter) (*MatrixFederationData, *sdk.CheckState) {

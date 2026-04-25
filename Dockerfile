@@ -9,6 +9,7 @@ COPY . .
 RUN CGO_ENABLED=0 go build -tags standalone -ldflags "-X main.Version=${CHECKER_VERSION}" -o /checker-matrix .
 
 FROM scratch
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=builder /checker-matrix /checker-matrix
 USER 65534:65534
 EXPOSE 8080

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"sort"
 	"strings"
 
 	sdk "git.happydns.org/checker-sdk-go/checker"
@@ -326,7 +327,13 @@ func (p *matrixProvider) GetHTMLReport(ctx sdk.ReportContext) (string, error) {
 	}
 
 	// Hosts
-	for name, h := range r.DNSResult.Hosts {
+	hostNames := make([]string, 0, len(r.DNSResult.Hosts))
+	for name := range r.DNSResult.Hosts {
+		hostNames = append(hostNames, name)
+	}
+	sort.Strings(hostNames)
+	for _, name := range hostNames {
+		h := r.DNSResult.Hosts[name]
 		data.Hosts = append(data.Hosts, matrixHostData{
 			Name:  name,
 			CName: h.CName,
@@ -335,7 +342,13 @@ func (p *matrixProvider) GetHTMLReport(ctx sdk.ReportContext) (string, error) {
 	}
 
 	// Successful connections
-	for addr, cr := range r.ConnectionReports {
+	connAddrs := make([]string, 0, len(r.ConnectionReports))
+	for addr := range r.ConnectionReports {
+		connAddrs = append(connAddrs, addr)
+	}
+	sort.Strings(connAddrs)
+	for _, addr := range connAddrs {
+		cr := r.ConnectionReports[addr]
 		conn := matrixConnectionData{
 			Address:     addr,
 			TLSVersion:  cr.Cipher.Version,
@@ -363,10 +376,15 @@ func (p *matrixProvider) GetHTMLReport(ctx sdk.ReportContext) (string, error) {
 	}
 
 	// Failed connections
-	for addr, ce := range r.ConnectionErrors {
+	errAddrs := make([]string, 0, len(r.ConnectionErrors))
+	for addr := range r.ConnectionErrors {
+		errAddrs = append(errAddrs, addr)
+	}
+	sort.Strings(errAddrs)
+	for _, addr := range errAddrs {
 		data.ConnectionErrors = append(data.ConnectionErrors, matrixConnErrData{
 			Address: addr,
-			Message: ce.Message,
+			Message: r.ConnectionErrors[addr].Message,
 		})
 	}
 

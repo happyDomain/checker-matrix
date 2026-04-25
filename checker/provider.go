@@ -14,8 +14,3 @@ type matrixProvider struct{}
 func (p *matrixProvider) Key() sdk.ObservationKey {
 	return ObservationKeyMatrix
 }
-
-// Definition implements sdk.CheckerDefinitionProvider.
-func (p *matrixProvider) Definition() *sdk.CheckerDefinition {
-	return Definition()
-}

@@ -20,5 +20,6 @@ var Version = "custom-build"
 // that the host will register in its global registries.
 func NewCheckerPlugin() (*sdk.CheckerDefinition, sdk.ObservationProvider, error) {
 	matrix.Version = Version
-	return matrix.Definition(), matrix.Provider(), nil
+	prvd := matrix.Provider()
+	return prvd.(sdk.CheckerDefinitionProvider).Definition(), prvd, nil
 }

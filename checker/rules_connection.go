@@ -3,6 +3,7 @@ package checker
 import (
 	"context"
 	"fmt"
+	"sort"
 
 	sdk "git.happydns.org/checker-sdk-go/checker"
 )
@@ -23,16 +24,22 @@ func (r *connectionReachableRule) Evaluate(ctx context.Context, obs sdk.Observat
 	}
 
 	if len(data.ConnectionErrors) == 0 && len(data.ConnectionReports) == 0 {
-		return []sdk.CheckState{infoState("matrix.connection_reachable.unknown", "No endpoint was probed by the federation tester.")}
+		return []sdk.CheckState{unknownState("matrix.connection_reachable.unknown", "No endpoint was probed by the federation tester.")}
 	}
 
 	if len(data.ConnectionErrors) == 0 {
 		return []sdk.CheckState{passState("matrix.connection_reachable.ok", fmt.Sprintf("All %d endpoint(s) accepted the connection.", len(data.ConnectionReports)))}
 	}
 
-	out := make([]sdk.CheckState, 0, len(data.ConnectionErrors))
-	for addr, cerr := range data.ConnectionErrors {
-		st := critState("matrix.connection_reachable.fail", cerr.Message)
+	addrs := make([]string, 0, len(data.ConnectionErrors))
+	for addr := range data.ConnectionErrors {
+		addrs = append(addrs, addr)
+	}
+	sort.Strings(addrs)
+
+	out := make([]sdk.CheckState, 0, len(addrs))
+	for _, addr := range addrs {
+		st := critState("matrix.connection_reachable.fail", data.ConnectionErrors[addr].Message)
 		st.Subject = addr
 		out = append(out, st)
 	}

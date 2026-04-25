@@ -35,7 +35,7 @@ func (p *matrixProvider) RenderForm() []sdk.CheckerOptionField {
 func (p *matrixProvider) ParseForm(r *http.Request) (sdk.CheckerOptions, error) {
 	domain := strings.TrimSpace(r.FormValue("serviceDomain"))
 	if domain == "" {
-		return nil, errors.New("Matrix domain is required")
+		return nil, errors.New("matrix domain is required")
 	}
 
 	opts := sdk.CheckerOptions{

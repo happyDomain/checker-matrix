@@ -3,6 +3,7 @@ package checker
 import (
 	"context"
 	"fmt"
+	"sort"
 	"strings"
 
 	sdk "git.happydns.org/checker-sdk-go/checker"
@@ -41,16 +42,21 @@ func (r *federationOKRule) Evaluate(ctx context.Context, obs sdk.ObservationGett
 	var statusLine string
 	switch {
 	case data.DNSResult.SRVError != nil && data.WellKnownResult.Result != "":
-		statusLine = fmt.Sprintf("%s OR %s", data.DNSResult.SRVError.Message, data.WellKnownResult.Result)
+		statusLine = fmt.Sprintf("%s; %s", data.DNSResult.SRVError.Message, data.WellKnownResult.Result)
 	case len(data.ConnectionErrors) > 0:
+		srvs := make([]string, 0, len(data.ConnectionErrors))
+		for srv := range data.ConnectionErrors {
+			srvs = append(srvs, srv)
+		}
+		sort.Strings(srvs)
 		var msg strings.Builder
-		for srv, cerr := range data.ConnectionErrors {
+		for _, srv := range srvs {
 			if msg.Len() > 0 {
 				msg.WriteString("; ")
 			}
 			msg.WriteString(srv)
 			msg.WriteString(": ")
-			msg.WriteString(cerr.Message)
+			msg.WriteString(data.ConnectionErrors[srv].Message)
 		}
 		statusLine = fmt.Sprintf("Connection errors: %s", msg.String())
 	default:

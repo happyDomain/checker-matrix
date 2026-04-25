@@ -17,7 +17,7 @@ import (
 var Version = "built-in"
 
 // Definition returns the CheckerDefinition for the matrix federation checker.
-func Definition() *sdk.CheckerDefinition {
+func (p *matrixProvider) Definition() *sdk.CheckerDefinition {
 	return &sdk.CheckerDefinition{
 		ID:      "matrixim",
 		Name:    "Matrix Federation Tester",

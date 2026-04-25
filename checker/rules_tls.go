@@ -3,6 +3,7 @@ package checker
 import (
 	"context"
 	"fmt"
+	"sort"
 	"strings"
 
 	sdk "git.happydns.org/checker-sdk-go/checker"
@@ -30,28 +31,44 @@ func (r *tlsChecksRule) Evaluate(ctx context.Context, obs sdk.ObservationGetter,
 		return []sdk.CheckState{unknownState("matrix.tls_checks.skipped", "No endpoint reached: TLS posture could not be assessed.")}
 	}
 
-	out := make([]sdk.CheckState, 0, len(data.ConnectionReports))
-	for addr, cr := range data.ConnectionReports {
+	addrs := make([]string, 0, len(data.ConnectionReports))
+	for addr := range data.ConnectionReports {
+		addrs = append(addrs, addr)
+	}
+	sort.Strings(addrs)
+
+	out := make([]sdk.CheckState, 0, len(addrs))
+	for _, addr := range addrs {
+		cr := data.ConnectionReports[addr]
 		var problems []string
+		seen := make(map[string]struct{})
+		add := func(p string) {
+			if p == "" {
+				return
+			}
+			if _, ok := seen[p]; ok {
+				return
+			}
+			seen[p] = struct{}{}
+			problems = append(problems, p)
+		}
 		if !cr.Checks.MatchingServerName {
-			problems = append(problems, "server name does not match certificate")
+			add("server name does not match certificate")
 		}
 		if !cr.Checks.FutureValidUntilTS {
-			problems = append(problems, "certificate expired or near expiry")
+			add("certificate expired or near expiry")
 		}
 		if !cr.Checks.ValidCertificates {
-			problems = append(problems, "certificate chain is invalid")
+			add("certificate chain is invalid")
 		}
 		if !cr.Checks.HasEd25519Key {
-			problems = append(problems, "no Ed25519 signing key advertised")
+			add("no Ed25519 signing key advertised")
 		}
 		if !cr.Checks.AllEd25519ChecksOK {
-			problems = append(problems, "Ed25519 key verification failed")
+			add("Ed25519 key verification failed")
 		}
 		for _, e := range cr.Errors {
-			if e != "" {
-				problems = append(problems, e)
-			}
+			add(e)
 		}
 
 		if len(problems) == 0 && cr.Checks.AllChecksOK {
