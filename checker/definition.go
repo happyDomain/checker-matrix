@@ -50,9 +50,7 @@ func Definition() *sdk.CheckerDefinition {
 				},
 			},
 		},
-		Rules: []sdk.CheckRule{
-			Rule(),
-		},
+		Rules: Rules(),
 		Interval: &sdk.CheckIntervalSpec{
 			Min:     5 * time.Minute,
 			Max:     7 * 24 * time.Hour,
