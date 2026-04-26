@@ -13,4 +13,6 @@ COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certifi
 COPY --from=builder /checker-matrix /checker-matrix
 USER 65534:65534
 EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD ["/checker-matrix", "-healthcheck"]
 ENTRYPOINT ["/checker-matrix"]
