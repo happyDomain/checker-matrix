@@ -54,6 +54,17 @@ Set the `endpoint` admin option for the `matrixim` checker to the URL of
 the running checker-matrix server (e.g., `http://checker-matrix:8080`).
 happyDomain will delegate observation collection to this endpoint.
 
+## Rules
+
+| Code                         | Description                                                                                       | Severity            |
+|------------------------------|---------------------------------------------------------------------------------------------------|---------------------|
+| `matrix.connection_reachable`| Checks that every discovered federation endpoint accepts an inbound connection.                   | CRITICAL            |
+| `matrix.federation_ok`       | Reports the overall federation status returned by the Matrix Federation Tester.                   | CRITICAL            |
+| `matrix.srv_records`         | Checks that the Matrix SRV lookup (`_matrix-fed._tcp` / `_matrix._tcp`) succeeded or was skipped. | CRITICAL            |
+| `matrix.tls_checks`          | Reviews the TLS posture on every reachable federation endpoint (chain, hostname, Ed25519 key).    | CRITICAL            |
+| `matrix.version`             | Checks that the homeserver responds to `/_matrix/federation/v1/version` with name and version.    | WARNING             |
+| `matrix.well_known`          | Checks that `/.well-known/matrix/server` (if published) is valid and points at the server_name.   | CRITICAL            |
+
 ## Options
 
 | Scope | Id                       | Description                                                                |
