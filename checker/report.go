@@ -296,8 +296,23 @@ func (p *matrixProvider) GetHTMLReport(ctx sdk.ReportContext) (string, error) {
 		return "", fmt.Errorf("failed to unmarshal matrix report: %w", err)
 	}
 
+	// When states are available, derive the federation verdict from them so the
+	// report badge and the rule output never disagree. Fall back to the raw
+	// observation flag when the host hasn't threaded rule output yet.
+	states := ctx.States()
+	federationOK := r.FederationOK
+	if len(states) > 0 {
+		federationOK = true
+		for _, st := range states {
+			if st.Status == sdk.StatusCrit || st.Status == sdk.StatusError || st.Status == sdk.StatusWarn {
+				federationOK = false
+				break
+			}
+		}
+	}
+
 	data := matrixTemplateData{
-		FederationOK:    r.FederationOK,
+		FederationOK:    federationOK,
 		WellKnownServer: r.WellKnownResult.Server,
 		WellKnownResult: r.WellKnownResult.Result,
 		SRVSkipped:      r.DNSResult.SRVSkipped,
