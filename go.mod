@@ -2,4 +2,7 @@ module git.happydns.org/checker-matrix
 
 go 1.25.0
 
-require git.happydns.org/checker-sdk-go v1.5.0
+require (
+	git.happydns.org/checker-sdk-go v1.5.0
+	git.happydns.org/checker-tls v0.7.0
+)
